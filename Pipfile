@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aiohttp = "==3.7.4.post0"
+async-timeout = "==3.0.1"
+attrs = "==21.2.0"
+chardet = "==4.0.0"
+idna = "==3.3"
+iso8601 = "==1.0.0"
+multidict = "==5.2.0"
+playsound = "==1.2.2"
+pyserial = "==3.5"
+twitchio = "==2.1.4"
+typing-extensions = "==3.10.0.2"
+yarl = "==1.7.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

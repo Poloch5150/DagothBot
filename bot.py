@@ -12,7 +12,7 @@ from twitchio import Channel, Client, User
 from twitchio.ext import commands, pubsub, routines
 
 
-class LeixBot(commands.Bot):
+class DagothBot(commands.Bot):
 
     def __init__(self):
         super().__init__(
@@ -60,7 +60,7 @@ class LeixBot(commands.Bot):
         ]
         await self.pubsub_client.pubsub.subscribe_topics(topics)
         await self.pubsub_client.connect()
-        self.channel = self.pubsub_client.get_channel("leix34")
+        self.channel = self.pubsub_client.get_channel("Payoyo5150")
 
         # Starting timers
         self.links.start()
@@ -83,12 +83,26 @@ class LeixBot(commands.Bot):
         if "@leixbot" in message.content.lower():
             await self.random_reply(message)
 
+        if "@dagothbot" in message.content.lower():
+            await self.random_reply(message)
+
         if message.author.name.lower() in self.bot_to_reply:
             await self.random_bot_reply(message)
 
         # Since we have commands and are overriding the default `event_message`
         # We must let the bot know we want to handle and invoke our commands...
         await self.handle_commands(message)
+
+    async def event_raw_usernotice(self, channel, tags):
+        if tags["msg-id"] == "sub":
+            await channel.send(f"PogChamp {tags['display-name']} fait désormais partie des adeptes de la maison Dagoth. Welcome Moon and Star !")
+        elif tags["msg-id"] == "resub":
+            await channel.send(
+                f"PogChamp Le resuuuub de {tags['display-name']}. Merci de fièrement soutenir la chaine depuis {tags['msg-param-cumulative-months']} T un chad JTM merci"
+            )
+        elif tags["msg-id"] == "raid":
+            await channel.send(
+                f"Il faut se défendre SwiftRage ! Nous sommes raid par {tags['msg-param-displayName']} et sa bande de {tags['msg-param-viewerCount']} zinzins")
 
     ## PUBSUB FUNCTIONS ##
     async def event_pubsub_channel_points(self, event: pubsub.PubSubChannelPointsMessage):
@@ -105,10 +119,10 @@ class LeixBot(commands.Bot):
 
     async def event_pubsub_bits(self, event: pubsub.PubSubBitsMessage):
         logging.info(
-            f'{event.user.name} just donated {event.bits_used} bits!'
+            f'{event.user.name} a claqué {event.bits_used} bits sur ce streamer de seconde zone !'
         )
         self.channel.send(
-            f'Merci pour les {event.bits_used} bits @{event.user.name} PogChamp'
+            f'Merci pour les {event.bits_used} bits @{event.user.name} mais vas-y molo sinon Payoyo va gagner assez pour devoir payer des impôts'
         )
 
     # TODO: add subs, follows, raids... events when twitchio has the classes implemented
@@ -118,18 +132,16 @@ class LeixBot(commands.Bot):
     ## TIMERS ##
     @routines.routine(minutes=30.0, wait_first=False)
     async def links(self):
-        await self.channel.send("Mon YouTube: https://youtube.com/leix34")
+        await self.channel.send("Mon YouTube: https://www.youtube.com/channel/UCgkntHnd-v_4KtcmF_sAyFA")
         await asyncio.sleep(60 * 30)
-        await self.channel.send("Guide Apex Legends: https://leochely.github.io/apexLegendsGuide/")
-        await asyncio.sleep(60 * 30)
-        await self.channel.send("Le discord: https://discord.com/invite/jzU7xWstS9")
+        await self.channel.send("Mes mods : https://www.nexusmods.com/doometernal/users/15899834")
         await asyncio.sleep(60 * 30)
 
     ## GENERAL FUNCTIONS ##
     @commands.command(name="git")
     async def git(self, ctx: commands.Context):
         await ctx.send(
-            f'Here is my source code https://github.com/leochely/leixbot/ MrDestructoid'
+            f'La légende dit que je suis né du sang de @Leixbot, sinon il y a mon code source (sûrement pas à jour connaissant Payoyo) : https://github.com/Poloch5150/DagothBot/ '
         )
 
     @commands.command(name="list")
@@ -140,26 +152,40 @@ class LeixBot(commands.Bot):
 
         # Remove last comma and space
         list = list[:-2]
-        await ctx.send(f'La liste des commandes de LeixBot: {list}')
+        await ctx.send(f'Je sais faire tout ça : {list}')
 
-    async def random_reply(self, message):
+    async def random_leixbot_reply(self, message):
         compiled_msg = re.compile(re.escape("@leixbot"), re.IGNORECASE)
         msg_clean = compiled_msg.sub("", message.content)
         reply_pool = [
-            "wsh t ki", "DONT LOOK BACK",
+            "hé tu parles pas comme ça à mon géniteur", "Tu vas faire quoi",
             "leix34Trigerred",
-            "Oui vous m'avez demandé?",
-            f"Ah ouais {msg_clean} ??"
+            "Oui vous l'avez demandé?",
+            f"ATTANSION {msg_clean} ??"
+        ]
+        reply = random.choice(reply_pool)
+        await message.author.channel.send(f"@{message.author.name} {reply}")
+
+    async def random_reply(self, message):
+        compiled_msg = re.compile(re.escape("@DagothBot"), re.IGNORECASE)
+        msg_clean = compiled_msg.sub("", message.content)
+        reply_pool = [
+            "wsh t ki", "Tu vas faire quoi",
+            "SwiftRage SwiftRage SwiftRage",
+            "kesta toi",
+            f"c moé {msg_clean} ??"
         ]
         reply = random.choice(reply_pool)
         await message.author.channel.send(f"@{message.author.name} {reply}")
 
     async def random_bot_reply(self, message):
         reply_pool = [
-            "wsh t ki DarkMode",
-            f"LeixBot > {message.author.name} SwiftRage",
-            f"tg {message.author.name} MrDestructoid",
-            f"Connard de {message.author.name} SwiftRage",
+            f"tu vas faire quoi {message.author.name}",
+            f"DagothBot > {message.author.name}",
+            f"{message.author.name} t'es moche comme le soleil :( ",
+            f"{message.author.name} tu pues de la tête",
+            f"{message.author.name} t'es moche comme ton père",
+            f"{message.author.name} ferme-la, physiquement",
         ]
         reply = random.choice(reply_pool)
         await message.author.channel.send(f"{reply}")
@@ -177,7 +203,7 @@ if __name__ == "__main__":
 
     client = Client(
         token=os.environ['CHANNEL_ACCESS_TOKEN'],
-        initial_channels=['leix34'],
+        initial_channels=['Payoyo5150'],
         client_secret=os.environ['CLIENT_SECRET']
     )
 
@@ -195,6 +221,6 @@ if __name__ == "__main__":
     # async def event_channel_subscriptions(event: pubsub.PubSubChannelSubscription):
     #     await bot.event_pubsub_channel_subscription(event)
 
-    bot = LeixBot()
+    bot = DagothBot()
     bot.pubsub_client = client
     bot.run()
